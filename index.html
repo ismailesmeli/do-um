@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abi Bak Burası Önemli!</title>
+    <title>Sistem Uyarısı!</title>
     <style>
         * {
             box-sizing: border-box;
@@ -23,15 +23,14 @@
             overflow: hidden;
             position: relative;
         }
-        /* Buton Grubu Konteyneri */
+        /* Ortak Buton Tasarımı */
         
         .btn-stage {
             text-align: center;
             z-index: 10;
             position: absolute;
-            transition: all 0.5s ease;
+            transition: all 0.3s ease;
         }
-        /* Ortak Buton Tasarımı */
         
         .surprise-btn {
             color: white;
@@ -41,14 +40,9 @@
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            white-space: nowrap;
         }
-        
-        .surprise-btn:hover {
-            transform: scale(1.08);
-        }
-        /* Farklı Aşama Buton Renkleri (Gittikçe Heyecan Katsın) */
         
         #stage1 .surprise-btn {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
@@ -63,46 +57,130 @@
         }
         
         #stage4 .surprise-btn {
-            background: linear-gradient(135deg, #ec4899, #be185d);
+            background: linear-gradient(135deg, #a855f7, #7e22ce);
         }
         
         #stage5 .surprise-btn {
-            background: linear-gradient(135deg, #ef4444, #b91c1c);
-            animation: pulse 1s infinite;
+            background: linear-gradient(135deg, #ec4899, #be185d);
+            transition: all 0.1s ease;
+        }
+        /* Soru Penceresi (Modal) */
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
         }
         
-        @keyframes pulse {
+        .modal-box {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid #3b82f6;
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.2);
+        }
+        
+        .modal-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .modal-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        
+        .modal-box button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* Korkunç Geri Sayım Ekranı */
+        
+        #countdownScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            color: #ff0055;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        #countdownScreen h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            animation: blink 0.5s infinite alternate;
+        }
+        
+        #timer {
+            font-size: 6rem;
+            font-weight: bold;
+            text-shadow: 0 0 20px #ff0055;
+        }
+        
+        @keyframes blink {
             0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
+                opacity: 0.3;
             }
             100% {
-                transform: scale(1);
+                opacity: 1;
             }
         }
         /* Son Doğum Günü Kartı */
         
         .card-container {
             opacity: 0;
-            transform: scale(0.8);
+            transform: scale(0.8) translate(-50%, -50%);
             pointer-events: none;
             transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
             text-align: center;
             max-width: 500px;
             padding: 40px 30px;
-            background: rgba(30, 41, 59, 0.85);
+            background: rgba(30, 41, 59, 0.95);
             border-radius: 20px;
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
             z-index: 5;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-origin: top left;
         }
         
         .card-container.active {
             opacity: 1;
-            transform: scale(1);
+            transform: scale(1) translate(-50%, -50%);
             pointer-events: auto;
         }
         
@@ -147,35 +225,50 @@
 
     <canvas id="canvas"></canvas>
 
-    <!-- AŞAMA 1 -->
-    <div class="btn-stage" id="stage1">
+    <div class="btn-stage" id="stage1" style="left:50%; top:50%; transform: translate(-50%, -50%);">
         <button class="surprise-btn" onclick="nextStage(1)">Abi buraya bas bi! 🚀</button>
     </div>
 
-    <!-- AŞAMA 2 -->
     <div class="btn-stage hidden" id="stage2">
         <button class="surprise-btn" onclick="nextStage(2)">Yok orası değil abi, buraya bas! 😂</button>
     </div>
 
-    <!-- AŞAMA 3 -->
     <div class="btn-stage hidden" id="stage3">
         <button class="surprise-btn" onclick="nextStage(3)">Yav abi buraya bas diyom valla son! 🤫</button>
     </div>
 
-    <!-- AŞAMA 4 -->
     <div class="btn-stage hidden" id="stage4">
         <button class="surprise-btn" onclick="nextStage(4)">Harbi son valla, bas abi! 🥺</button>
     </div>
 
-    <!-- AŞAMA 5 (SON DÜZLÜK) -->
     <div class="btn-stage hidden" id="stage5">
-        <button class="surprise-btn" onclick="startSurprise()">ABİ SON KEZ BAS KOPUYORUZ! 🔥</button>
+        <button class="surprise-btn" onmouseover="escapeButton()" onclick="openQuestion1()">Sıkıysa yakala bas abi! 😜</button>
     </div>
 
-    <!-- SÜRPRİZ SONUÇ KARTI -->
+    <div class="modal-overlay hidden" id="q1Modal">
+        <div class="modal-box">
+            <h3>Soru 1: En sevdiğin hayvan nedir? 🐔</h3>
+            <input type="text" id="ans1" placeholder="Cevabını yaz...">
+            <button onclick="checkQuestion1()">Onayla</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="q2Modal">
+        <div class="modal-box" style="border-color: #ec4899;">
+            <h3>Soru 2: En sevdiğin erkek kardeşin kim? 😏</h3>
+            <input type="text" id="ans2" placeholder="Doğruyu söyle...">
+            <button onclick="checkQuestion2()" style="background:#ec4899;">Onayla</button>
+        </div>
+    </div>
+
+    <div id="countdownScreen">
+        <h2>SİSTEM İMHA EDİLİYOR...</h2>
+        <div id="timer">10.00</div>
+    </div>
+
     <div class="card-container" id="cardBox">
         <h1>İyi Ki Doğdun Abi! 🎉</h1>
-        <p>Gördüğün gibi kolay lokma değil! Hayatın boyunca karşına çıkan tüm engelleri böyle tek tek aşman dileğiyle. Sağlık, mutluluk ve başarı hep seninle olsun.</p>
+        <p>Bütün aşamaları geçip testi başarıyla tamamladın! Hayatın boyunca karşına çıkan tüm zorlukları ve "sistem hatalarını" böyle zekice ve eğlenceyle atlatman dileğiyle.</p>
         <p class="signature">İyi ki varsın, iyi ki abimsin! ✨</p>
     </div>
 
@@ -183,6 +276,8 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
+        let escapeCount = 0;
+        let audioCtx = null;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -191,25 +286,116 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Butonları sırayla açan ve ekranın rastgele yerlerine fırlatan fonksiyon
-        function nextStage(currentStage) {
-            // Aktif butonu gizle
-            document.getElementById(`stage${currentStage}`).classList.add('hidden');
-
-            // Bir sonraki butonu seç
-            const next = document.getElementById(`stage${currentStage + 1}`);
-            next.classList.remove('hidden');
-
-            // Butonu ekranın rastgele bir yerine yerleştir (Ekran dışına taşmasın diye %15 pay bırakıyoruz)
-            const randomX = Math.floor(Math.random() * 60) + 20; // %20 ile %80 arası
-            const randomY = Math.floor(Math.random() * 60) + 20;
-
-            next.style.left = `${randomX}%`;
-            next.style.top = `${randomY}%`;
-            next.style.transform = 'translate(-50%, -50%)';
+        // Yapay Saat Tık Sesi Üretici
+        function playTickSound(frequency = 150, duration = 0.05) {
+            try {
+                if (!audioCtx) audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Ses çalınamadı.");
+            }
         }
 
-        // Parçacık Motoru
+        function nextStage(currentStage) {
+            document.getElementById(`stage${currentStage}`).classList.add('hidden');
+            const nextId = `stage${currentStage + 1}`;
+            const next = document.getElementById(nextId);
+            next.classList.remove('hidden');
+            moveButtonRandomly(nextId);
+        }
+
+        function moveButtonRandomly(id) {
+            const el = document.getElementById(id);
+            const x = Math.floor(Math.random() * 60) + 20;
+            const y = Math.floor(Math.random() * 60) + 20;
+            el.style.left = `${x}%`;
+            el.style.top = `${y}%`;
+            el.style.transform = 'translate(-50%, -50%)';
+        }
+
+        function escapeButton() {
+            if (escapeCount < 4) {
+                moveButtonRandomly('stage5');
+                escapeCount++;
+            }
+        }
+
+        // Soru 1'i aç
+        function openQuestion1() {
+            document.getElementById('stage5').classList.add('hidden');
+            document.getElementById('q1Modal').classList.remove('hidden');
+        }
+
+        // Soru 1 Kontrolü (Tavuk)
+        function checkQuestion1() {
+            const answer = document.getElementById('ans1').value.trim().toLowerCase();
+            if (answer === 'tavuk') {
+                document.getElementById('q1Modal').classList.add('hidden');
+                document.getElementById('q2Modal').classList.remove('hidden');
+            } else {
+                alert('Yanlış cevap abi, seni gidi yalancı! Tekrar dene.');
+            }
+        }
+
+        // Soru 2 Kontrolü (Kardeş)
+        function checkQuestion2() {
+            const answer = document.getElementById('ans2').value.trim().toLowerCase();
+            // ismail, iso, sen kelimelerinden biri geçiyor mu bakıyoruz
+            if (answer.includes('ismail') || answer.includes('iso') || answer === 'sen' || answer.includes('sensin')) {
+                document.getElementById('q2Modal').classList.add('hidden');
+                startScaryCountdown();
+            } else {
+                alert('Cık cık cık... Doğru cevabı verene kadar buradasın!');
+            }
+        }
+
+        // Korkunç Geri Sayım Başlangıcı
+        function startScaryCountdown() {
+            const screen = document.getElementById('countdownScreen');
+            const timerEl = document.getElementById('timer');
+            screen.style.display = 'flex';
+
+            let timeLeft = 10.00;
+            let lastSecond = 10;
+
+            const countdownInterval = setInterval(() => {
+                timeLeft -= 0.01;
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    timerEl.innerText = "0.00";
+                    screen.style.display = 'none'; // Geri sayımı kapat
+                    startSurprise(); // Büyük finali aç
+                    return;
+                }
+
+                // Ekrana saliseli formatta yazdır (Örn: 9.54)
+                timerEl.innerText = timeLeft.toFixed(2);
+
+                // Her tam saniyede bir mekanik tık sesi çıkar
+                let currentSecond = Math.floor(timeLeft);
+                if (currentSecond !== lastSecond) {
+                    playTickSound(120, 0.08); // Normal saniye tıkı
+                    lastSecond = currentSecond;
+                }
+
+                // Son 3 saniyede ses hızlansın ve incelsin (Panik efekti)
+                if (timeLeft < 3.00 && Math.random() < 0.1) {
+                    playTickSound(300, 0.03);
+                }
+
+            }, 10); // Her 10 milisaniyede bir çalışır
+        }
+
+        // Havai Fişek Motoru ve Final
         class Particle {
             constructor(x, y, isFirework) {
                 this.x = x;
@@ -255,35 +441,23 @@
             for (let i = particles.length - 1; i >= 0; i--) {
                 particles[i].update();
                 particles[i].draw();
-                if (particles[i].alpha <= 0) {
-                    particles.splice(i, 1);
-                }
+                if (particles[i].alpha <= 0) particles.splice(i, 1);
             }
             requestAnimationFrame(animate);
         }
 
         function createFirework(x, y) {
-            for (let i = 0; i < 80; i++) {
-                particles.push(new Particle(x, y, true));
-            }
+            for (let i = 0; i < 80; i++) particles.push(new Particle(x, y, true));
         }
 
-        // Büyük Final
         function startSurprise() {
-            document.getElementById('stage5').classList.add('hidden');
-
             const card = document.getElementById('cardBox');
             card.classList.add('active');
-
-            // Kartı tam merkeze alalım
-            card.style.position = 'absolute';
-            card.style.left = '50%';
-            card.style.top = '50%';
-            card.style.transform = 'translate(-50%, -50%)';
-
             animate();
 
-            // Havai fişek yağmuru
+            // Büyük patlama ses efekti (Kutlama tonu)
+            playTickSound(400, 0.5);
+
             createFirework(canvas.width * 0.5, canvas.height * 0.4);
             setTimeout(() => createFirework(canvas.width * 0.2, canvas.height * 0.3), 300);
             setTimeout(() => createFirework(canvas.width * 0.8, canvas.height * 0.2), 600);
