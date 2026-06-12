@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abi Bak Burası Önemli!</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #0f172a;
+            color: #f8fafc;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        /* Buton Grubu Konteyneri */
+        
+        .btn-stage {
+            text-align: center;
+            z-index: 10;
+            position: absolute;
+            transition: all 0.5s ease;
+        }
+        /* Ortak Buton Tasarımı */
+        
+        .surprise-btn {
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .surprise-btn:hover {
+            transform: scale(1.08);
+        }
+        /* Farklı Aşama Buton Renkleri (Gittikçe Heyecan Katsın) */
+        
+        #stage1 .surprise-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+        
+        #stage2 .surprise-btn {
+            background: linear-gradient(135deg, #10b981, #047857);
+        }
+        
+        #stage3 .surprise-btn {
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+        }
+        
+        #stage4 .surprise-btn {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+        }
+        
+        #stage5 .surprise-btn {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        /* Son Doğum Günü Kartı */
+        
+        .card-container {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+            max-width: 500px;
+            padding: 40px 30px;
+            background: rgba(30, 41, 59, 0.85);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            z-index: 5;
+        }
+        
+        .card-container.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(to right, #f43f5e, #fb923c, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            margin-bottom: 25px;
+        }
+        
+        .signature {
+            font-weight: bold;
+            color: #3b82f6;
+            font-size: 1.3rem;
+        }
+        
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <!-- AŞAMA 1 -->
+    <div class="btn-stage" id="stage1">
+        <button class="surprise-btn" onclick="nextStage(1)">Abi buraya bas bi! 🚀</button>
+    </div>
+
+    <!-- AŞAMA 2 -->
+    <div class="btn-stage hidden" id="stage2">
+        <button class="surprise-btn" onclick="nextStage(2)">Yok orası değil abi, buraya bas! 😂</button>
+    </div>
+
+    <!-- AŞAMA 3 -->
+    <div class="btn-stage hidden" id="stage3">
+        <button class="surprise-btn" onclick="nextStage(3)">Yav abi buraya bas diyom valla son! 🤫</button>
+    </div>
+
+    <!-- AŞAMA 4 -->
+    <div class="btn-stage hidden" id="stage4">
+        <button class="surprise-btn" onclick="nextStage(4)">Harbi son valla, bas abi! 🥺</button>
+    </div>
+
+    <!-- AŞAMA 5 (SON DÜZLÜK) -->
+    <div class="btn-stage hidden" id="stage5">
+        <button class="surprise-btn" onclick="startSurprise()">ABİ SON KEZ BAS KOPUYORUZ! 🔥</button>
+    </div>
+
+    <!-- SÜRPRİZ SONUÇ KARTI -->
+    <div class="card-container" id="cardBox">
+        <h1>İyi Ki Doğdun Abi! 🎉</h1>
+        <p>Gördüğün gibi kolay lokma değil! Hayatın boyunca karşına çıkan tüm engelleri böyle tek tek aşman dileğiyle. Sağlık, mutluluk ve başarı hep seninle olsun.</p>
+        <p class="signature">İyi ki varsın, iyi ki abimsin! ✨</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Butonları sırayla açan ve ekranın rastgele yerlerine fırlatan fonksiyon
+        function nextStage(currentStage) {
+            // Aktif butonu gizle
+            document.getElementById(`stage${currentStage}`).classList.add('hidden');
+
+            // Bir sonraki butonu seç
+            const next = document.getElementById(`stage${currentStage + 1}`);
+            next.classList.remove('hidden');
+
+            // Butonu ekranın rastgele bir yerine yerleştir (Ekran dışına taşmasın diye %15 pay bırakıyoruz)
+            const randomX = Math.floor(Math.random() * 60) + 20; // %20 ile %80 arası
+            const randomY = Math.floor(Math.random() * 60) + 20;
+
+            next.style.left = `${randomX}%`;
+            next.style.top = `${randomY}%`;
+            next.style.transform = 'translate(-50%, -50%)';
+        }
+
+        // Parçacık Motoru
+        class Particle {
+            constructor(x, y, isFirework) {
+                this.x = x;
+                this.y = y;
+                this.isFirework = isFirework;
+                if (isFirework) {
+                    this.speedX = (Math.random() - 0.5) * 10;
+                    this.speedY = (Math.random() - 0.5) * 10;
+                    this.radius = Math.random() * 3 + 1;
+                    this.gravity = 0.06;
+                } else {
+                    this.speedX = (Math.random() - 0.5) * 4;
+                    this.speedY = Math.random() * 3 + 2;
+                    this.radius = Math.random() * 4 + 2;
+                    this.gravity = 0.02;
+                }
+                this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.005;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.speedY += this.gravity;
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.alpha -= this.decay;
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (document.getElementById('cardBox').classList.contains('active') && Math.random() < 0.3) {
+                particles.push(new Particle(Math.random() * canvas.width, -10, false));
+            }
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].alpha <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function createFirework(x, y) {
+            for (let i = 0; i < 80; i++) {
+                particles.push(new Particle(x, y, true));
+            }
+        }
+
+        // Büyük Final
+        function startSurprise() {
+            document.getElementById('stage5').classList.add('hidden');
+
+            const card = document.getElementById('cardBox');
+            card.classList.add('active');
+
+            // Kartı tam merkeze alalım
+            card.style.position = 'absolute';
+            card.style.left = '50%';
+            card.style.top = '50%';
+            card.style.transform = 'translate(-50%, -50%)';
+
+            animate();
+
+            // Havai fişek yağmuru
+            createFirework(canvas.width * 0.5, canvas.height * 0.4);
+            setTimeout(() => createFirework(canvas.width * 0.2, canvas.height * 0.3), 300);
+            setTimeout(() => createFirework(canvas.width * 0.8, canvas.height * 0.2), 600);
+
+            setInterval(() => {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * (canvas.height * 0.6);
+                createFirework(x, y);
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>
